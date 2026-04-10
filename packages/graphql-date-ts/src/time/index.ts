@@ -44,24 +44,30 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 			if (validateTime(value)) {
 				return serializeTimeString(value);
 			}
-			throw new TypeError(`Time cannot represent an invalid time-string ${value}.`);
+			throw new TypeError(
+				`Time cannot represent an invalid time-string ${value}.`,
+			);
 		} else {
 			throw new TypeError(
 				"Time cannot be serialized from a non string, " +
 					"or non Date type " +
-					JSON.stringify(value)
+					JSON.stringify(value),
 			);
 		}
 	},
 	parseValue(value): Date {
 		if (typeof value !== "string") {
-			throw new TypeError(`Time cannot represent non string type ${JSON.stringify(value)}`);
+			throw new TypeError(
+				`Time cannot represent non string type ${JSON.stringify(value)}`,
+			);
 		}
 
 		if (validateTime(value)) {
 			return parseTime(value);
 		}
-		throw new TypeError(`Time cannot represent an invalid time-string ${value}.`);
+		throw new TypeError(
+			`Time cannot represent an invalid time-string ${value}.`,
+		);
 	},
 	parseLiteral(ast): Date {
 		if (ast.kind !== Kind.STRING) {
@@ -76,7 +82,7 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 				errorMessage = `Time cannot represent non string type object.`;
 			} else {
 				errorMessage = `Time cannot represent non string type ${String(
-					ast.value != null ? ast.value : null
+					ast.value != null ? ast.value : null,
 				)}`;
 			}
 
@@ -86,7 +92,9 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 		if (validateTime(value)) {
 			return parseTime(value);
 		}
-		throw new TypeError(`Time cannot represent an invalid time-string ${String(value)}.`);
+		throw new TypeError(
+			`Time cannot represent an invalid time-string ${String(value)}.`,
+		);
 	},
 };
 

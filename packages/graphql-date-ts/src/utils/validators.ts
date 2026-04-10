@@ -140,7 +140,9 @@ export const validateDateTime = (dateTimeString: string): boolean => {
 export const validateUnixTimestamp = (timestamp: number): boolean => {
 	const MAX_INT = 2147483647;
 	const MIN_INT = -2147483648;
-	return timestamp === timestamp && timestamp <= MAX_INT && timestamp >= MIN_INT; // eslint-disable-line
+	return (
+		timestamp === timestamp && timestamp <= MAX_INT && timestamp >= MIN_INT
+	); // eslint-disable-line
 };
 
 // Function that checks whether a javascript Date instance

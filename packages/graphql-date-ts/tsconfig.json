@@ -8,11 +8,16 @@
 		"allowJs": false,
 		"declaration": true,
 		"esModuleInterop": true,
-		"moduleResolution": "node",
-		"rootDir": "src",
+		"moduleResolution": "bundler",
+		"paths": {
+			"@reubin/graphql-ast-assertions": [
+				"../graphql-ast-assertions/src/index.ts"
+			]
+		},
+		"rootDir": "..",
 		"strict": true,
 		"skipLibCheck": true,
-		"types": ["jest", "node"]
+		"types": ["node"]
 	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules"]

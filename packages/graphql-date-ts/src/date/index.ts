@@ -6,7 +6,12 @@ import {
 	isListTypeNode,
 	isObjectTypeNode,
 } from "@reubin/graphql-ast-assertions";
-import { validateDate, validateJSDate, serializeDate, parseDate } from "../utils";
+import {
+	validateDate,
+	validateJSDate,
+	serializeDate,
+	parseDate,
+} from "../utils";
 
 /**
  * An RFC 3339 compliant date scalar.
@@ -36,22 +41,29 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 			if (validateDate(value)) {
 				return String(value);
 			}
-			throw new TypeError(`Date cannot represent an invalid date-string ${value}.`);
+			throw new TypeError(
+				`Date cannot represent an invalid date-string ${value}.`,
+			);
 		} else {
 			throw new TypeError(
-				"Date cannot represent a non string, or non Date type " + JSON.stringify(value)
+				"Date cannot represent a non string, or non Date type " +
+					JSON.stringify(value),
 			);
 		}
 	},
 	parseValue(value) {
 		if (typeof value !== "string") {
-			throw new TypeError(`Date cannot represent non string type ${JSON.stringify(value)}`);
+			throw new TypeError(
+				`Date cannot represent non string type ${JSON.stringify(value)}`,
+			);
 		}
 
 		if (validateDate(value)) {
 			return parseDate(value);
 		}
-		throw new TypeError(`Date cannot represent an invalid date-string ${value}.`);
+		throw new TypeError(
+			`Date cannot represent an invalid date-string ${value}.`,
+		);
 	},
 	parseLiteral(ast) {
 		if (ast.kind !== Kind.STRING) {
@@ -66,7 +78,7 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 				errorMessage = `Date cannot represent an object`;
 			} else {
 				errorMessage = `Date cannot represent non string type ${String(
-					ast.value !== null ? ast.value : null
+					ast.value !== null ? ast.value : null,
 				)}`;
 			}
 			throw new TypeError(errorMessage);
@@ -75,7 +87,9 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 		if (validateDate(value)) {
 			return parseDate(value);
 		}
-		throw new TypeError(`Date cannot represent an invalid date-string ${String(value)}.`);
+		throw new TypeError(
+			`Date cannot represent an invalid date-string ${String(value)}.`,
+		);
 	},
 };
 

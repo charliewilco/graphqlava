@@ -46,31 +46,37 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 			if (validateDateTime(value)) {
 				return serializeDateTimeString(value);
 			}
-			throw new TypeError(`DateTime cannot represent an invalid date-time-string ${value}.`);
+			throw new TypeError(
+				`DateTime cannot represent an invalid date-time-string ${value}.`,
+			);
 		} else if (typeof value === "number") {
 			if (validateUnixTimestamp(value)) {
 				return serializeUnixTimestamp(value);
 			}
-			throw new TypeError("DateTime cannot represent an invalid Unix timestamp " + value);
+			throw new TypeError(
+				"DateTime cannot represent an invalid Unix timestamp " + value,
+			);
 		} else {
 			throw new TypeError(
 				"DateTime cannot be serialized from a non string, " +
 					"non numeric or non Date type " +
-					JSON.stringify(value)
+					JSON.stringify(value),
 			);
 		}
 	},
 	parseValue(value) {
 		if (typeof value !== "string") {
 			throw new TypeError(
-				`DateTime cannot represent non string type ${JSON.stringify(value)}`
+				`DateTime cannot represent non string type ${JSON.stringify(value)}`,
 			);
 		}
 
 		if (validateDateTime(value)) {
 			return parseDateTime(value);
 		}
-		throw new TypeError(`DateTime cannot represent an invalid date-time-string ${value}.`);
+		throw new TypeError(
+			`DateTime cannot represent an invalid date-time-string ${value}.`,
+		);
 	},
 	parseLiteral(ast) {
 		if (ast.kind !== Kind.STRING) {
@@ -85,7 +91,7 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 				errorMessage = `DateTime cannot represent an object.`;
 			} else {
 				errorMessage = `DateTime cannot represent non string type ${String(
-					ast.value != null ? ast.value : null
+					ast.value != null ? ast.value : null,
 				)}`;
 			}
 
@@ -96,7 +102,7 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 			return parseDateTime(value);
 		}
 		throw new TypeError(
-			`DateTime cannot represent an invalid date-time-string ${String(value)}.`
+			`DateTime cannot represent an invalid date-time-string ${String(value)}.`,
 		);
 	},
 };

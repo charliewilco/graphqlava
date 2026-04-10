@@ -1,3 +1,4 @@
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import {
 	serializeTime,
 	serializeTimeString,
@@ -9,11 +10,18 @@ import {
 	parseDate,
 	parseDateTime,
 } from "../src/utils";
-import { stringify } from "jest-matcher-utils";
 import MockDate from "mockdate";
+import { inspect } from "node:util";
 
-// Mock the new Date() call so it always returns 2017-01-01T00:00:00.000Z
-MockDate.set(new Date(Date.UTC(2017, 0, 1)));
+const stringify = (value: unknown): string => inspect(value, { depth: null });
+
+beforeAll(() => {
+	MockDate.set(new Date(Date.UTC(2017, 0, 1)));
+});
+
+afterAll(() => {
+	MockDate.reset();
+});
 
 const mockDateString: Record<string, [Date, string][]> = {
 	a: [
@@ -95,11 +103,20 @@ const mockStringDate: Record<string, [string, Date][]> = {
 		["2017-01-07T00:00:00+01:00", new Date(Date.UTC(2017, 0, 6, 23))],
 		// Datetime with hours, minutes, seconds and fractional seconds.
 		["2016-02-01T00:00:00.12Z", new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 120))],
-		["2016-02-01T00:00:00.123456Z", new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 123))],
-		["2016-02-01T00:00:00.12399Z", new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 123))],
+		[
+			"2016-02-01T00:00:00.123456Z",
+			new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 123)),
+		],
+		[
+			"2016-02-01T00:00:00.12399Z",
+			new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 123)),
+		],
 		["2016-02-01T00:00:00.000Z", new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 0))],
 		["2016-02-01T00:00:00.993Z", new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 993))],
-		["2017-01-07T11:25:00.450+01:00", new Date(Date.UTC(2017, 0, 7, 10, 25, 0, 450))],
+		[
+			"2017-01-07T11:25:00.450+01:00",
+			new Date(Date.UTC(2017, 0, 7, 10, 25, 0, 450)),
+		],
 	],
 };
 
@@ -136,7 +153,7 @@ describe("formatting", () => {
 
 	mockNumberString.a.forEach(([timestamp, dateTimeString]) => {
 		test(`serializes Unix timestamp ${stringify(
-			timestamp
+			timestamp,
 		)} into date-time-string ${dateTimeString}`, () => {
 			expect(serializeUnixTimestamp(timestamp)).toEqual(dateTimeString);
 		});

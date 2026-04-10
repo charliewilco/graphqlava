@@ -1,7 +1,8 @@
+import { describe, expect, test } from "bun:test";
 import { depthLimit } from "../src";
 import { buildSchema, Source, parse, validate, specifiedRules } from "graphql";
 
-function createDocument(query: any) {
+function createDocument(query: string) {
 	const source = new Source(query, "GraphQL request");
 	return parse(source);
 }
@@ -90,10 +91,17 @@ describe("graphql-depth-limit", () => {
 			read2: 2,
 			read3: 3,
 		};
-		const spec = (depths: any) => Object.is(values, depths);
+		let depthsFromCallback: Record<string, number> | undefined;
+		const spec = (depths: Record<string, number>) => {
+			depthsFromCallback = depths;
+		};
 		// @ts-ignore
-		const errors = validate(schema, document, [...specifiedRules, depthLimit(10, {}, spec)]);
+		const errors = validate(schema, document, [
+			...specifiedRules,
+			depthLimit(10, {}, spec),
+		]);
 		expect(errors).toEqual([]);
+		expect(depthsFromCallback).toEqual(values);
 	});
 
 	test("should count with fragments", () => {
@@ -155,18 +163,27 @@ describe("graphql-depth-limit", () => {
 			read2: 2,
 			read3: 3,
 		};
-
-		const spec = (depths: any) => Object.is(values, depths);
+		let depthsFromCallback: Record<string, number> | undefined;
+		const spec = (depths: Record<string, number>) => {
+			depthsFromCallback = depths;
+		};
 		// @ts-ignore
-		const errors = validate(schema, document, [...specifiedRules, depthLimit(10, {}, spec)]);
+		const errors = validate(schema, document, [
+			...specifiedRules,
+			depthLimit(10, {}, spec),
+		]);
 
 		expect(errors).toEqual([]);
+		expect(depthsFromCallback).toEqual(values);
 	});
 
 	test("should ignore the introspection query", () => {
 		const document = createDocument(introQuery);
 		// @ts-ignore
-		const errors = validate(schema, document, [...specifiedRules, depthLimit(5)]);
+		const errors = validate(schema, document, [
+			...specifiedRules,
+			depthLimit(5),
+		]);
 
 		expect(errors).toEqual([]);
 	});
@@ -189,11 +206,15 @@ describe("graphql-depth-limit", () => {
   }`;
 		const document = createDocument(query);
 		// @ts-ignore
-		const errors = validate(schema, document, [...specifiedRules, depthLimit(4)]);
+		const errors = validate(schema, document, [
+			...specifiedRules,
+			depthLimit(4),
+		]);
 
 		expect(errors.length).toEqual(1);
-		// What would the next line look like if we were using Jest?
-		expect(errors[0].message).toEqual("'' exceeds maximum operation depth of 4");
+		expect(errors[0].message).toEqual(
+			"'' exceeds maximum operation depth of 4",
+		);
 	});
 
 	test("should ignore a field", () => {
@@ -215,7 +236,10 @@ describe("graphql-depth-limit", () => {
 			read1: 2,
 			read2: 0,
 		};
-		const spec = (depths: any) => Object.is(values, depths);
+		let depthsFromCallback: Record<string, number> | undefined;
+		const spec = (depths: Record<string, number>) => {
+			depthsFromCallback = depths;
+		};
 		// @ts-ignore
 		const errors = validate(schema, document, [
 			// @ts-ignore
@@ -225,6 +249,7 @@ describe("graphql-depth-limit", () => {
 		]);
 
 		expect(errors).toEqual([]);
+		expect(depthsFromCallback).toEqual(values);
 	});
 
 	const introQuery = `

@@ -1,6 +1,22 @@
+import { describe, expect, test } from "bun:test";
 import { GraphQLDateTime } from "../src";
 import { Kind, ValueNode } from "graphql";
-import { stringify } from "jest-matcher-utils";
+import { inspect } from "node:util";
+
+const stringify = (value: unknown): string => inspect(value, { depth: null });
+
+const expectTypeErrorMessage = (callback: () => unknown, message: string) => {
+	let thrown: unknown;
+
+	try {
+		callback();
+	} catch (error) {
+		thrown = error;
+	}
+
+	expect(thrown).toBeInstanceOf(TypeError);
+	expect((thrown as TypeError | undefined)?.message).toBe(message);
+};
 
 const invalidDates = [
 	// General
@@ -28,36 +44,48 @@ const validDates: [string, Date][] = [
 	["2016-02-01T00:00:00.000Z", new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 0))],
 	["2016-02-01T00:00:00.990Z", new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 990))],
 	["2016-02-01T00:00:00.23498Z", new Date(Date.UTC(2016, 1, 1, 0, 0, 0, 234))],
-	["2017-01-07T11:25:00.450+01:00", new Date(Date.UTC(2017, 0, 7, 10, 25, 0, 450))],
+	[
+		"2017-01-07T11:25:00.450+01:00",
+		new Date(Date.UTC(2017, 0, 7, 10, 25, 0, 450)),
+	],
 ];
 
 describe("GraphQLDateTime", () => {
 	test("has a description", () => {
-		expect(GraphQLDateTime.description).toMatchSnapshot();
+		expect(GraphQLDateTime.description).toBe(
+			"A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.",
+		);
 	});
 
 	describe("serialization", () => {
 		[{}, [], null, undefined, true].forEach((invalidInput) => {
 			test(`throws error when serializing ${stringify(invalidInput)}`, () => {
-				expect(() => GraphQLDateTime.serialize(invalidInput)).toThrowErrorMatchingSnapshot();
+				expectTypeErrorMessage(
+					() => GraphQLDateTime.serialize(invalidInput),
+					`DateTime cannot be serialized from a non string, non numeric or non Date type ${JSON.stringify(invalidInput)}`,
+				);
 			});
 		});
 
 		[
 			[new Date(Date.UTC(2016, 0, 1)), "2016-01-01T00:00:00.000Z"],
-			[new Date(Date.UTC(2016, 0, 1, 14, 48, 10, 30)), "2016-01-01T14:48:10.030Z"],
+			[
+				new Date(Date.UTC(2016, 0, 1, 14, 48, 10, 30)),
+				"2016-01-01T14:48:10.030Z",
+			],
 		].forEach(([value, expected]) => {
 			test(`serializes javascript Date ${stringify(value)} into ${stringify(
-				expected
+				expected,
 			)}`, () => {
 				expect(GraphQLDateTime.serialize(value)).toEqual(expected);
 			});
 		});
 
 		test(`throws error when serializing invalid date`, () => {
-			expect(() =>
-				GraphQLDateTime.serialize(new Date("invalid date"))
-			).toThrowErrorMatchingSnapshot();
+			expectTypeErrorMessage(
+				() => GraphQLDateTime.serialize(new Date("invalid date")),
+				"DateTime cannot represent an invalid Date instance",
+			);
 		});
 
 		[
@@ -73,9 +101,12 @@ describe("GraphQLDateTime", () => {
 
 		invalidDates.forEach((dateString) => {
 			test(`throws an error when serializing an invalid date-string ${stringify(
-				dateString
+				dateString,
 			)}`, () => {
-				expect(() => GraphQLDateTime.serialize(dateString)).toThrowErrorMatchingSnapshot();
+				expectTypeErrorMessage(
+					() => GraphQLDateTime.serialize(dateString),
+					`DateTime cannot represent an invalid date-time-string ${dateString}.`,
+				);
 			});
 		});
 
@@ -89,7 +120,7 @@ describe("GraphQLDateTime", () => {
 			[-2147483648, "1901-12-13T20:45:52.000Z"],
 		].forEach(([value, expected]) => {
 			test(`serializes unix timestamp ${stringify(
-				value
+				value,
 			)} into date-string ${expected}`, () => {
 				expect(GraphQLDateTime.serialize(value)).toEqual(expected);
 			});
@@ -104,9 +135,12 @@ describe("GraphQLDateTime", () => {
 			-2147483649,
 		].forEach((value) => {
 			test(`throws an error serializing the invalid unix timestamp ${stringify(
-				value
+				value,
 			)}`, () => {
-				expect(() => GraphQLDateTime.serialize(value)).toThrowErrorMatchingSnapshot();
+				expectTypeErrorMessage(
+					() => GraphQLDateTime.serialize(value),
+					`DateTime cannot represent an invalid Unix timestamp ${value}`,
+				);
 			});
 		});
 	});
@@ -114,7 +148,7 @@ describe("GraphQLDateTime", () => {
 	describe("value parsing", () => {
 		validDates.forEach(([value, expected]) => {
 			test(`parses date-string ${stringify(value)} into javascript Date ${stringify(
-				expected
+				expected,
 			)}`, () => {
 				expect(GraphQLDateTime.parseValue(value)).toEqual(expected);
 			});
@@ -122,18 +156,24 @@ describe("GraphQLDateTime", () => {
 
 		[4566, {}, [], true, null].forEach((invalidInput) => {
 			test(`throws an error when parsing ${stringify(invalidInput)}`, () => {
-				expect(() => GraphQLDateTime.parseValue(invalidInput)).toThrowErrorMatchingSnapshot();
+				expectTypeErrorMessage(
+					() => GraphQLDateTime.parseValue(invalidInput),
+					`DateTime cannot represent non string type ${JSON.stringify(invalidInput)}`,
+				);
 			});
 		});
 
 		invalidDates.forEach((dateString) => {
 			test(`throws an error parsing an invalid date-string ${stringify(dateString)}`, () => {
-				expect(() => GraphQLDateTime.parseValue(dateString)).toThrowErrorMatchingSnapshot();
+				expectTypeErrorMessage(
+					() => GraphQLDateTime.parseValue(dateString),
+					`DateTime cannot represent an invalid date-time-string ${dateString}.`,
+				);
 			});
 		});
 	});
 
-	describe("literial parsing", () => {
+	describe("literal parsing", () => {
 		validDates.forEach(([value, expected]) => {
 			const literal: ValueNode = {
 				kind: Kind.STRING,
@@ -141,7 +181,7 @@ describe("GraphQLDateTime", () => {
 			};
 
 			test(`parses literal ${stringify(literal)} into javascript Date ${stringify(
-				expected
+				expected,
 			)}`, () => {
 				expect(GraphQLDateTime.parseLiteral(literal)).toEqual(expected);
 			});
@@ -153,10 +193,12 @@ describe("GraphQLDateTime", () => {
 				value,
 			};
 			test(`errors when parsing invalid literal ${stringify(invalidLiteral)}`, () => {
-				expect(() =>
-					// @ts-expect-error
-					GraphQLDateTime.parseLiteral(invalidLiteral)
-				).toThrowErrorMatchingSnapshot();
+				expectTypeErrorMessage(
+					() =>
+						// @ts-expect-error
+						GraphQLDateTime.parseLiteral(invalidLiteral),
+					`DateTime cannot represent an invalid date-time-string ${value}.`,
+				);
 			});
 		});
 
@@ -170,9 +212,14 @@ describe("GraphQLDateTime", () => {
 			},
 		].forEach((literal) => {
 			test(`errors when parsing invalid literal ${stringify(literal)}`, () => {
-				// @ts-expect-error
-
-				expect(() => GraphQLDateTime.parseLiteral(literal)).toThrowErrorMatchingSnapshot();
+				expectTypeErrorMessage(
+					() =>
+						// @ts-expect-error
+						GraphQLDateTime.parseLiteral(literal),
+					literal.kind === Kind.FLOAT
+						? "DateTime cannot represent non string type 5"
+						: "DateTime cannot represent non string type null",
+				);
 			});
 		});
 	});

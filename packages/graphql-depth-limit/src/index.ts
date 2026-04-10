@@ -25,7 +25,11 @@ interface Options {
  * @returns {Function} The validator function for GraphQL validation phase.
  */
 export const depthLimit =
-	(maxDepth: number, options: Options = {}, callback: DepthCallback = (value: any) => {}) =>
+	(
+		maxDepth: number,
+		options: Options = {},
+		callback: DepthCallback = (value: any) => {},
+	) =>
 	(validationContext: ValidationContext) => {
 		try {
 			const { definitions } = validationContext.getDocument();
@@ -40,7 +44,7 @@ export const depthLimit =
 					maxDepth,
 					validationContext,
 					name,
-					options
+					options,
 				) as number;
 			}
 			callback(queryDepths);
@@ -52,26 +56,32 @@ export const depthLimit =
 	};
 
 function getFragments(
-	definitions: readonly DefinitionNode[]
+	definitions: readonly DefinitionNode[],
 ): Record<string, FragmentDefinitionNode> {
-	return definitions.reduce((map: Record<string, FragmentDefinitionNode>, definition) => {
-		if (definition.kind === Kind.FRAGMENT_DEFINITION) {
-			map[definition.name.value] = definition;
-		}
-		return map;
-	}, {});
+	return definitions.reduce(
+		(map: Record<string, FragmentDefinitionNode>, definition) => {
+			if (definition.kind === Kind.FRAGMENT_DEFINITION) {
+				map[definition.name.value] = definition;
+			}
+			return map;
+		},
+		{},
+	);
 }
 
 // this will actually get both queries and mutations. we can basically treat those the same
 function getQueriesAndMutations(
-	definitions: readonly DefinitionNode[]
+	definitions: readonly DefinitionNode[],
 ): Record<string, OperationDefinitionNode> {
-	return definitions.reduce((map: Record<string, OperationDefinitionNode>, definition) => {
-		if (definition.kind === Kind.OPERATION_DEFINITION) {
-			map[definition.name ? definition.name.value : ""] = definition;
-		}
-		return map;
-	}, {});
+	return definitions.reduce(
+		(map: Record<string, OperationDefinitionNode>, definition) => {
+			if (definition.kind === Kind.OPERATION_DEFINITION) {
+				map[definition.name ? definition.name.value : ""] = definition;
+			}
+			return map;
+		},
+		{},
+	);
 }
 
 function determineDepth(
@@ -81,22 +91,24 @@ function determineDepth(
 	maxDepth: number,
 	context: ValidationContext,
 	operationName: string,
-	options: Options
+	options: Options,
 ): number {
 	if (depthSoFar > maxDepth) {
 		// @ts-expect-error
 		// this should bubble up the error
 		return context.reportError(
-			new GraphQLError(`'${operationName}' exceeds maximum operation depth of ${maxDepth}`, [
-				node,
-			])
+			new GraphQLError(
+				`'${operationName}' exceeds maximum operation depth of ${maxDepth}`,
+				[node],
+			),
 		);
 	}
 
 	switch (node.kind) {
 		case Kind.FIELD:
 			// by default, ignore the introspection fields which begin with double underscores
-			const shouldIgnore = /^__/.test(node.name.value) || seeIfIgnored(node, options.ignore);
+			const shouldIgnore =
+				/^__/.test(node.name.value) || seeIfIgnored(node, options.ignore);
 
 			if (shouldIgnore || !node.selectionSet) {
 				return 0;
@@ -112,9 +124,9 @@ function determineDepth(
 							maxDepth,
 							context,
 							operationName,
-							options
-						)
-					)
+							options,
+						),
+					),
 				)
 			);
 		case Kind.FRAGMENT_SPREAD:
@@ -125,7 +137,7 @@ function determineDepth(
 				maxDepth,
 				context,
 				operationName,
-				options
+				options,
 			);
 		case Kind.INLINE_FRAGMENT:
 		case Kind.FRAGMENT_DEFINITION:
@@ -139,9 +151,9 @@ function determineDepth(
 						maxDepth,
 						context,
 						operationName,
-						options
-					)
-				)
+						options,
+					),
+				),
 			);
 		default:
 			// @ts-expect-error
@@ -150,7 +162,7 @@ function determineDepth(
 }
 
 function getFieldName(
-	node: OperationDefinitionNode | SelectionNode | FragmentDefinitionNode
+	node: OperationDefinitionNode | SelectionNode | FragmentDefinitionNode,
 ): string {
 	let fieldName = "";
 
@@ -177,7 +189,9 @@ function getFieldName(
 	return fieldName;
 }
 
-function typeCheckRule(rule: any): rule is string | RegExp | ((queryDepths: any) => boolean) {
+function typeCheckRule(
+	rule: any,
+): rule is string | RegExp | ((queryDepths: any) => boolean) {
 	if (typeof rule === "string" || rule instanceof RegExp) {
 		return true;
 	}
@@ -191,7 +205,7 @@ function typeCheckRule(rule: any): rule is string | RegExp | ((queryDepths: any)
 
 function seeIfIgnored(
 	node: OperationDefinitionNode | SelectionNode | FragmentDefinitionNode,
-	ignore: Array<string | RegExp | ((queryDepths: any) => boolean)> = []
+	ignore: Array<string | RegExp | ((queryDepths: any) => boolean)> = [],
 ) {
 	for (let rule of Array.from(ignore)) {
 		const fieldName = getFieldName(node);

@@ -1,3 +1,4 @@
+import { describe, expect, test } from "bun:test";
 import { Kind } from "graphql";
 import * as assertions from "../src";
 
@@ -10,7 +11,7 @@ describe("graphql-ast-assertions", () => {
 					kind: Kind.NAME,
 					value: "foo",
 				},
-			})
+			}),
 		).toBe(true);
 	});
 });
