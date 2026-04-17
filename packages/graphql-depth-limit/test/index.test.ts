@@ -96,7 +96,6 @@ describe("graphql-depth-limit", () => {
 		const spec = (depths: Record<string, number>) => {
 			depthsFromCallback = depths;
 		};
-		// @ts-ignore
 		const errors = validate(schema, document, [
 			...specifiedRules,
 			depthLimit(10, {}, spec),
@@ -168,7 +167,6 @@ describe("graphql-depth-limit", () => {
 		const spec = (depths: Record<string, number>) => {
 			depthsFromCallback = depths;
 		};
-		// @ts-ignore
 		const errors = validate(schema, document, [
 			...specifiedRules,
 			depthLimit(10, {}, spec),
@@ -180,7 +178,6 @@ describe("graphql-depth-limit", () => {
 
 	test("should ignore the introspection query", () => {
 		const document = createDocument(introQuery);
-		// @ts-ignore
 		const errors = validate(schema, document, [
 			...specifiedRules,
 			depthLimit(5),
@@ -206,7 +203,6 @@ describe("graphql-depth-limit", () => {
     }
   }`;
 		const document = createDocument(query);
-		// @ts-ignore
 		const errors = validate(schema, document, [
 			...specifiedRules,
 			depthLimit(4),
@@ -239,16 +235,63 @@ describe("graphql-depth-limit", () => {
 		const spec = (depths: Record<string, number>) => {
 			depthsFromCallback = depths;
 		};
-		// @ts-ignore
 		const errors = validate(schema, document, [
-			// @ts-ignore
 			...specifiedRules,
-			// @ts-ignore
 			depthLimit(10, options, spec),
 		]);
 
 		assert.deepEqual(errors, []);
 		assert.deepEqual(depthsFromCallback, values);
+	});
+
+	test("should treat string ignores as exact field-name matches", () => {
+		const query = `
+			query read1 {
+				user { address { city } }
+			}
+			query read2 {
+				user1 { address { city } }
+			}
+		`;
+		const document = createDocument(query);
+		let depthsFromCallback: Record<string, number> | undefined;
+		const spec = (depths: Record<string, number>) => {
+			depthsFromCallback = depths;
+		};
+		const errors = validate(schema, document, [
+			...specifiedRules,
+			depthLimit(10, { ignore: ["user"] }, spec),
+		]);
+
+		assert.deepEqual(errors, []);
+		assert.deepEqual(depthsFromCallback, {
+			read1: 0,
+			read2: 2,
+		});
+	});
+
+	test("should throw on invalid ignore rules from untyped callers", () => {
+		const query = `
+			query read1 {
+				user { address { city } }
+			}
+		`;
+		const document = createDocument(query);
+
+		assert.throws(
+			() =>
+				validate(schema, document, [
+					...specifiedRules,
+					depthLimit(10, {
+						ignore: [123 as unknown as string],
+					}),
+				]),
+			(error: unknown) => {
+				assert.ok(error instanceof Error);
+				assert.equal(error.message, "Invalid ignore option: 123");
+				return true;
+			},
+		);
 	});
 
 	const introQuery = `

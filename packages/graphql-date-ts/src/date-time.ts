@@ -11,9 +11,9 @@ import {
 	parseDateTime,
 } from "./utils";
 import {
-	isListTypeNode,
+	isListValueNode,
 	isNullNode,
-	isObjectTypeNode,
+	isObjectValueNode,
 	isVariableNode,
 } from "@graphqlava/graphql-ast-assertions";
 
@@ -85,9 +85,9 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 				errorMessage = `DateTime cannot represent variables.`;
 			} else if (isNullNode(ast)) {
 				errorMessage = `DateTime cannot represent null.`;
-			} else if (isListTypeNode(ast)) {
+			} else if (isListValueNode(ast)) {
 				errorMessage = `DateTime cannot represent an array.`;
-			} else if (isObjectTypeNode(ast)) {
+			} else if (isObjectValueNode(ast)) {
 				errorMessage = `DateTime cannot represent an object.`;
 			} else {
 				errorMessage = `DateTime cannot represent non string type ${String(

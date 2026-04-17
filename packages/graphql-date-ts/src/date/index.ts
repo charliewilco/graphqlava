@@ -1,10 +1,10 @@
 import { GraphQLScalarType, Kind } from "graphql";
 import type { GraphQLScalarTypeConfig } from "graphql";
 import {
-	isVariableNode,
+	isListValueNode,
 	isNullNode,
-	isListTypeNode,
-	isObjectTypeNode,
+	isObjectValueNode,
+	isVariableNode,
 } from "@graphqlava/graphql-ast-assertions";
 import {
 	validateDate,
@@ -72,9 +72,9 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 				errorMessage = `Date cannot represent variable ${ast.name.value}`;
 			} else if (isNullNode(ast)) {
 				errorMessage = `Date cannot represent null`;
-			} else if (isListTypeNode(ast)) {
+			} else if (isListValueNode(ast)) {
 				errorMessage = `Date cannot represent an array`;
-			} else if (isObjectTypeNode(ast)) {
+			} else if (isObjectValueNode(ast)) {
 				errorMessage = `Date cannot represent an object`;
 			} else {
 				errorMessage = `Date cannot represent non string type ${String(

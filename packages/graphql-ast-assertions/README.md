@@ -13,8 +13,8 @@ npm install @graphqlava/graphql-ast-assertions graphql
 ```ts
 import { Kind } from "graphql";
 import {
-	isBooleanTypeNode,
-	isIntTypeNode,
+	isBooleanValueNode,
+	isIntValueNode,
 	isVariableNode,
 } from "@graphqlava/graphql-ast-assertions";
 
@@ -30,21 +30,27 @@ if (isVariableNode(valueNode)) {
 	console.log(valueNode.name.value);
 }
 
-if (isIntTypeNode(valueNode)) {
+if (isIntValueNode(valueNode)) {
 	console.log("integer");
 }
 
-if (isBooleanTypeNode(valueNode)) {
+if (isBooleanValueNode(valueNode)) {
 	console.log("boolean");
 }
 ```
 
-These helpers are intentionally tiny: they do not transform nodes or walk the AST, they just provide typed guards for GraphQL value-node branches.
+These helpers are intentionally tiny: they do not transform nodes or walk the AST, they just provide typed guards for GraphQL value-node branches. The older `*TypeNode` names are still exported as compatibility aliases, but the `*ValueNode` names are the accurate API going forward.
 
 ## API
 
 - `isVariableNode(value: ValueNode): value is VariableNode`
 - `isNullNode(value: ValueNode): value is NullValueNode`
+- `isListValueNode(value: ValueNode): value is ListValueNode`
+- `isIntValueNode(value: ValueNode): value is IntValueNode`
+- `isFloatValueNode(value: ValueNode): value is FloatValueNode`
+- `isBooleanValueNode(value: ValueNode): value is BooleanValueNode`
+- `isEnumValueNode(value: ValueNode): value is EnumValueNode`
+- `isObjectValueNode(value: ValueNode): value is ObjectValueNode`
 - `isListTypeNode(value: ValueNode): value is ListValueNode`
 - `isIntTypeNode(value: ValueNode): value is IntValueNode`
 - `isFloatTypeNode(value: ValueNode): value is FloatValueNode`

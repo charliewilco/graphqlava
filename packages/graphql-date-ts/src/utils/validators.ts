@@ -72,9 +72,9 @@ export const validateDate = (datestring: string): boolean => {
 
 	// Verify the correct number of days for
 	// the month contained in the date-string.
-	const year = Number(datestring.substr(0, 4));
-	const month = Number(datestring.substr(5, 2));
-	const day = Number(datestring.substr(8, 2));
+	const year = Number(datestring.slice(0, 4));
+	const month = Number(datestring.slice(5, 7));
+	const day = Number(datestring.slice(8, 10));
 
 	switch (month) {
 		case 2: // February
@@ -126,8 +126,8 @@ export const validateDateTime = (dateTimeString: string): boolean => {
 	// Split the date-time-string up into the string-date and time-string part.
 	// and check whether these parts are RFC 3339 compliant.
 	const index = dateTimeString.indexOf("T");
-	const dateString = dateTimeString.substr(0, index);
-	const timeString = dateTimeString.substr(index + 1);
+	const dateString = dateTimeString.slice(0, index);
+	const timeString = dateTimeString.slice(index + 1);
 	return validateDate(dateString) && validateTime(timeString);
 };
 

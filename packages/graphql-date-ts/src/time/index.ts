@@ -1,9 +1,9 @@
-import { GraphQLScalarType, Kind, isValueNode } from "graphql";
+import { GraphQLScalarType, Kind } from "graphql";
 import type { GraphQLScalarTypeConfig } from "graphql";
 import {
-	isListTypeNode,
+	isListValueNode,
 	isNullNode,
-	isObjectTypeNode,
+	isObjectValueNode,
 	isVariableNode,
 } from "@graphqlava/graphql-ast-assertions";
 
@@ -76,9 +76,9 @@ const config: GraphQLScalarTypeConfig<Date, string> = {
 				errorMessage = `Time cannot represent non string type ${ast.name.value}.`;
 			} else if (isNullNode(ast)) {
 				errorMessage = `Time cannot represent non string type null.`;
-			} else if (isListTypeNode(ast)) {
+			} else if (isListValueNode(ast)) {
 				errorMessage = `Time cannot represent non string type array.`;
-			} else if (isObjectTypeNode(ast)) {
+			} else if (isObjectValueNode(ast)) {
 				errorMessage = `Time cannot represent non string type object.`;
 			} else {
 				errorMessage = `Time cannot represent non string type ${String(

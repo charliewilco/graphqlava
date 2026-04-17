@@ -1,20 +1,24 @@
 import {
+	type ASTVisitor,
 	GraphQLError,
 	Kind,
-	type ValidationContext,
 	type DefinitionNode,
-	type OperationDefinitionNode,
 	type FragmentDefinitionNode,
+	type OperationDefinitionNode,
 	type SelectionNode,
+	type ValidationContext,
+	type ValidationRule,
 } from "graphql";
 
-interface DepthCallback {
-	(depths: Record<string, number>): void;
-}
+type OperationDepths = Record<string, number>;
+type IgnoreMatcher = string | RegExp | ((fieldName: string) => boolean);
+type DepthCallback = (depths: OperationDepths) => void;
 
 interface Options {
-	ignore?: Array<string | RegExp | ((queryDepths: any) => boolean)>;
+	ignore?: IgnoreMatcher[];
 }
+
+const noopDepthCallback: DepthCallback = () => {};
 
 /**
  * Creates a validator for the GraphQL query depth
@@ -24,36 +28,33 @@ interface Options {
  * @param {Function} [callback] - Called each time validation runs. Receives an Object which is a map of the depths for each operation.
  * @returns {Function} The validator function for GraphQL validation phase.
  */
-export const depthLimit =
-	(
-		maxDepth: number,
-		options: Options = {},
-		callback: DepthCallback = (value: any) => {},
-	) =>
-	(validationContext: ValidationContext) => {
-		try {
-			const { definitions } = validationContext.getDocument();
-			const fragments = getFragments(definitions);
-			const queries = getQueriesAndMutations(definitions);
-			const queryDepths: Record<string, number> = {};
-			for (let name in queries) {
-				queryDepths[name] = determineDepth(
-					queries[name],
-					fragments,
-					0,
-					maxDepth,
-					validationContext,
-					name,
-					options,
-				) as number;
-			}
-			callback(queryDepths);
-			return validationContext;
-		} catch (err) {
-			console.error(err);
-			throw err;
+export function depthLimit(
+	maxDepth: number,
+	options: Options = {},
+	callback: DepthCallback = noopDepthCallback,
+): ValidationRule {
+	return (validationContext: ValidationContext): ASTVisitor => {
+		const { definitions } = validationContext.getDocument();
+		const fragments = getFragments(definitions);
+		const operations = getOperations(definitions);
+		const queryDepths: OperationDepths = {};
+
+		for (const [name, operation] of Object.entries(operations)) {
+			queryDepths[name] = determineDepth(
+				operation,
+				fragments,
+				0,
+				maxDepth,
+				validationContext,
+				name,
+				options,
+			);
 		}
+
+		callback(queryDepths);
+		return {};
 	};
+}
 
 function getFragments(
 	definitions: readonly DefinitionNode[],
@@ -69,8 +70,7 @@ function getFragments(
 	);
 }
 
-// this will actually get both queries and mutations. we can basically treat those the same
-function getQueriesAndMutations(
+function getOperations(
 	definitions: readonly DefinitionNode[],
 ): Record<string, OperationDefinitionNode> {
 	return definitions.reduce(
@@ -94,14 +94,13 @@ function determineDepth(
 	options: Options,
 ): number {
 	if (depthSoFar > maxDepth) {
-		// @ts-expect-error
-		// this should bubble up the error
-		return context.reportError(
+		context.reportError(
 			new GraphQLError(
 				`'${operationName}' exceeds maximum operation depth of ${maxDepth}`,
 				[node],
 			),
 		);
+		return depthSoFar;
 	}
 
 	switch (node.kind) {
@@ -156,8 +155,7 @@ function determineDepth(
 				),
 			);
 		default:
-			// @ts-expect-error
-			throw new Error("uh oh! depth crawler cannot handle: " + node.kind);
+			return assertNever(node);
 	}
 }
 
@@ -175,7 +173,7 @@ function getFieldName(
 	}
 
 	if (node.kind === Kind.INLINE_FRAGMENT) {
-		fieldName = node.loc + "inlineFragment";
+		fieldName = "inlineFragment";
 	}
 
 	if (node.kind === Kind.FRAGMENT_DEFINITION) {
@@ -189,28 +187,22 @@ function getFieldName(
 	return fieldName;
 }
 
-function typeCheckRule(
-	rule: any,
-): rule is string | RegExp | ((queryDepths: any) => boolean) {
-	if (typeof rule === "string" || rule instanceof RegExp) {
-		return true;
-	}
-
-	if (typeof rule === "function") {
-		return true;
-	}
-
-	return false;
+function isIgnoreMatcher(rule: unknown): rule is IgnoreMatcher {
+	return (
+		typeof rule === "string" ||
+		rule instanceof RegExp ||
+		typeof rule === "function"
+	);
 }
 
 function seeIfIgnored(
 	node: OperationDefinitionNode | SelectionNode | FragmentDefinitionNode,
-	ignore: Array<string | RegExp | ((queryDepths: any) => boolean)> = [],
-) {
-	for (let rule of Array.from(ignore)) {
+	ignore: IgnoreMatcher[] = [],
+): boolean {
+	for (const rule of ignore) {
 		const fieldName = getFieldName(node);
 
-		if (!typeCheckRule(rule)) {
+		if (!isIgnoreMatcher(rule)) {
 			throw new Error(`Invalid ignore option: ${rule}`);
 		}
 
@@ -218,11 +210,23 @@ function seeIfIgnored(
 			if (rule(fieldName)) {
 				return true;
 			}
-		} else {
-			if (fieldName.match(rule)) {
+			continue;
+		}
+
+		if (typeof rule === "string") {
+			if (fieldName === rule) {
 				return true;
 			}
+			continue;
+		}
+
+		if (rule.test(fieldName)) {
+			return true;
 		}
 	}
 	return false;
+}
+
+function assertNever(value: never): never {
+	throw new Error("uh oh! depth crawler cannot handle: " + String(value));
 }

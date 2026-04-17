@@ -9,7 +9,7 @@
 export const parseTime = (time: string): Date => {
 	const currentDateString = new Date().toISOString();
 	return new Date(
-		currentDateString.substr(0, currentDateString.indexOf("T") + 1) + time,
+		currentDateString.slice(0, currentDateString.indexOf("T") + 1) + time,
 	);
 };
 
@@ -17,7 +17,7 @@ export const parseTime = (time: string): Date => {
 // format hh:mm:ss.sssZ.
 export const serializeTime = (date: Date): string => {
 	const dateTimeString = date.toISOString();
-	return dateTimeString.substr(dateTimeString.indexOf("T") + 1);
+	return dateTimeString.slice(dateTimeString.indexOf("T") + 1);
 };
 
 // Serializes an RFC 3339 compliant time-string by shifting
