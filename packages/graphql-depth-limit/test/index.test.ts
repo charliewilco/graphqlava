@@ -290,8 +290,7 @@ describe("graphql-depth-limit", () => {
       ...InputValue
     }
     interfaces {
-      ...TypeRef
-    }
+      ...TypeRef }
     enumValues(includeDeprecated: true) {
       name
       description
