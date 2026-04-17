@@ -5,7 +5,7 @@ import {
 	isNullNode,
 	isListTypeNode,
 	isObjectTypeNode,
-} from "@reubin/graphql-ast-assertions";
+} from "@graphqlava/graphql-ast-assertions";
 import {
 	validateDate,
 	validateJSDate,

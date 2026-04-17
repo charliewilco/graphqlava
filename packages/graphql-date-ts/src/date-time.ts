@@ -15,7 +15,7 @@ import {
 	isNullNode,
 	isObjectTypeNode,
 	isVariableNode,
-} from "@reubin/graphql-ast-assertions";
+} from "@graphqlava/graphql-ast-assertions";
 
 /**
  * An RFC 3339 compliant date-time scalar.

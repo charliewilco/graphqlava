@@ -1,13 +1,45 @@
 {
 	"name": "@graphqlava/graphql-depth-limit",
 	"version": "1.2.3",
+	"description": "GraphQL validation rule for rejecting operations that exceed a maximum depth.",
 	"type": "module",
 	"main": "dist/index.cjs",
 	"module": "dist/index.js",
 	"types": "dist/index.d.ts",
-	"private": true,
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"license": "UNLICENSED",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/charliewilco/graphqlava.git",
+		"directory": "packages/graphql-depth-limit"
+	},
+	"homepage": "https://github.com/charliewilco/graphqlava#readme",
+	"bugs": {
+		"url": "https://github.com/charliewilco/graphqlava/issues"
+	},
+	"keywords": [
+		"graphql",
+		"validation",
+		"query-depth",
+		"security"
+	],
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
 	"engines": {
-		"node": ">=24.0.0"
+		"node": ">=18.18.0"
 	},
 	"scripts": {
 		"build": "tsup",

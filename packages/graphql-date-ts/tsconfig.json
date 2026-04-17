@@ -10,7 +10,7 @@
 		"esModuleInterop": true,
 		"moduleResolution": "bundler",
 		"paths": {
-			"@reubin/graphql-ast-assertions": [
+			"@graphqlava/graphql-ast-assertions": [
 				"../graphql-ast-assertions/src/index.ts"
 			]
 		},

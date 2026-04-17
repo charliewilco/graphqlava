@@ -2,16 +2,16 @@
 
 Validation rule for rejecting GraphQL operations that exceed a maximum depth.
 
-## Workspace Usage
+## Install
 
 ```sh
-npm install
+npm install @graphqlava/graphql-depth-limit graphql
 ```
 
 ## Usage
 
 ```ts
-import { depthLimit } from "@reubin/graphql-depth-limit";
+import { depthLimit } from "@graphqlava/graphql-depth-limit";
 import { parse, specifiedRules, validate } from "graphql";
 
 const document = parse(`
@@ -28,6 +28,12 @@ const errors = validate(schema, document, [...specifiedRules, depthLimit(2)]);
 ```
 
 The validator measures depth per operation, supports fragment traversal, and ignores GraphQL introspection fields by default.
+
+## Behavior Notes
+
+- Fragment spreads and inline fragments contribute to the final depth calculation.
+- Introspection fields such as `__typename` are ignored by default.
+- `ignore` lets you skip fields by exact name, `RegExp`, or a predicate function that receives the field name.
 
 ## Options
 
@@ -48,5 +54,5 @@ depthLimit(
 
 ## Requirements
 
-- Node.js `24+`
+- Node.js `18.18+`
 - `graphql` `^16.13.2`

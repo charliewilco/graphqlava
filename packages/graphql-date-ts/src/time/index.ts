@@ -5,7 +5,7 @@ import {
 	isNullNode,
 	isObjectTypeNode,
 	isVariableNode,
-} from "@reubin/graphql-ast-assertions";
+} from "@graphqlava/graphql-ast-assertions";
 
 import {
 	validateTime,

@@ -2,10 +2,10 @@
 
 RFC 3339 GraphQL scalars for dates, times, and UTC date-times.
 
-## Workspace Usage
+## Install
 
 ```sh
-npm install
+npm install @graphqlava/graphql-date-ts graphql
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ import {
 	GraphQLDate,
 	GraphQLDateTime,
 	GraphQLTime,
-} from "@reubin/graphql-date-ts";
+} from "@graphqlava/graphql-date-ts";
 
 export const resolvers = {
 	Date: GraphQLDate,
@@ -39,7 +39,13 @@ export const resolvers = {
 - `GraphQLDateTime.serialize()` accepts `Date`, RFC 3339 date-time strings, and 32-bit Unix timestamps in seconds.
 - All serialization paths normalize timezone offsets to UTC output.
 
+## Edge Cases
+
+- Offset inputs such as `2024-01-01T05:00:00-05:00` serialize back out as UTC, for example `2024-01-01T10:00:00Z`.
+- Fractional seconds are preserved from the original RFC 3339 string even though JavaScript `Date` only stores millisecond precision.
+- Unix timestamps are interpreted as signed 32-bit seconds, so values outside that range are rejected.
+
 ## Requirements
 
-- Node.js `24+`
+- Node.js `18.18+`
 - `graphql` `^16.13.2`

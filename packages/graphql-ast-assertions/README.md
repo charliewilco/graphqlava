@@ -2,10 +2,10 @@
 
 Type guards for narrowing GraphQL `ValueNode` variants without hand-written `kind` checks.
 
-## Workspace Usage
+## Install
 
 ```sh
-npm install
+npm install @graphqlava/graphql-ast-assertions graphql
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ import {
 	isBooleanTypeNode,
 	isIntTypeNode,
 	isVariableNode,
-} from "@reubin/graphql-ast-assertions";
+} from "@graphqlava/graphql-ast-assertions";
 
 const valueNode = {
 	kind: Kind.VARIABLE,
@@ -54,5 +54,5 @@ These helpers are intentionally tiny: they do not transform nodes or walk the AS
 
 ## Requirements
 
-- Node.js `24+`
+- Node.js `18.18+`
 - `graphql` `^16.13.2`
