@@ -1,10 +1,11 @@
-import { describe, expect, test } from "bun:test";
+import assert from "node:assert/strict";
+import { describe, test } from "node:test";
 import { Kind } from "graphql";
 import * as assertions from "../src";
 
 describe("graphql-ast-assertions", () => {
 	test("isVariableNode", () => {
-		expect(
+		assert.equal(
 			assertions.isVariableNode({
 				kind: Kind.VARIABLE,
 				name: {
@@ -12,6 +13,7 @@ describe("graphql-ast-assertions", () => {
 					value: "foo",
 				},
 			}),
-		).toBe(true);
+			true,
+		);
 	});
 });

@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository is a Bun workspace with three packages under `packages/`:
+This repository is an npm workspace with three packages under `packages/`:
 
 - `packages/graphql-ast-assertions`: GraphQL AST type guards
 - `packages/graphql-date-ts`: RFC 3339 GraphQL date/time scalars
@@ -11,22 +11,22 @@ This repository is a Bun workspace with three packages under `packages/`:
 Each package follows the same layout:
 
 - `src/`: library source
-- `test/`: Bun test files such as `index.test.ts`
+- `test/`: Node test files such as `index.test.ts`
 - `dist/`: generated build output from `tsup`
 
-Root-level files coordinate the workspace: [`package.json`](/Users/charliewilco/Developer/graphqlava/package.json), [`bun.lock`](/Users/charliewilco/Developer/graphqlava/bun.lock), [`README.md`](/Users/charliewilco/Developer/graphqlava/README.md), and this guide.
+Root-level files coordinate the workspace: [`package.json`](/Users/charliewilco/Developer/graphqlava/package.json), [`package-lock.json`](/Users/charliewilco/Developer/graphqlava/package-lock.json), [`README.md`](/Users/charliewilco/Developer/graphqlava/README.md), and this guide.
 
 ## Build, Test, and Development Commands
 
 Run all commands from the repository root.
 
-- `bun install`: install workspace dependencies
-- `bun run typecheck`: run `tsc --noEmit` in every package
-- `bun run build`: build all packages with `tsup`
-- `bun run test`: run the full Bun test suite across workspaces
-- `bun run format`: check formatting with Prettier
-- `bun run format:write`: apply Prettier formatting
-- `bun run check`: full local verification pass
+- `npm install`: install workspace dependencies
+- `npm run typecheck`: run `tsc --noEmit` in every package
+- `npm run build`: build all packages with `tsup`
+- `npm run test`: run the full Node-based test suite across workspaces
+- `npm run format`: check formatting with Prettier
+- `npm run format:write`: apply Prettier formatting
+- `npm run check`: full local verification pass
 
 ## Coding Style & Naming Conventions
 
@@ -40,9 +40,9 @@ Formatting is enforced with Prettier 3. Keep generated output out of manual edit
 
 ## Testing Guidelines
 
-Tests use Bun’s built-in runner via `bun:test`. Prefer explicit assertions over snapshots; this repo recently removed Jest snapshots in favor of direct message and value checks.
+Tests use the Node test runner through `tsx --test`. Prefer explicit assertions over snapshots; this repo recently removed Jest snapshots in favor of direct message and value checks.
 
-Place tests in each package’s `test/` directory and keep them close to the public API they verify. Run `bun run test` before opening a PR, and use `bun run check` for full validation.
+Place tests in each package’s `test/` directory and keep them close to the public API they verify. Run `npm run test` before opening a PR, and use `npm run check` for full validation.
 
 ## Commit & Pull Request Guidelines
 
@@ -55,5 +55,5 @@ Use concise subject lines that describe the repo-level change. For pull requests
 
 - a short summary of the change
 - affected package(s)
-- verification performed, for example `bun run check`
+- verification performed, for example `npm run check`
 - linked issue or context if the change is not self-explanatory

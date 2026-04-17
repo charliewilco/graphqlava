@@ -1,4 +1,5 @@
-import { describe, expect, test } from "bun:test";
+import assert from "node:assert/strict";
+import { describe, test } from "node:test";
 import { depthLimit } from "../src";
 import { buildSchema, Source, parse, validate, specifiedRules } from "graphql";
 
@@ -100,8 +101,8 @@ describe("graphql-depth-limit", () => {
 			...specifiedRules,
 			depthLimit(10, {}, spec),
 		]);
-		expect(errors).toEqual([]);
-		expect(depthsFromCallback).toEqual(values);
+		assert.deepEqual(errors, []);
+		assert.deepEqual(depthsFromCallback, values);
 	});
 
 	test("should count with fragments", () => {
@@ -173,8 +174,8 @@ describe("graphql-depth-limit", () => {
 			depthLimit(10, {}, spec),
 		]);
 
-		expect(errors).toEqual([]);
-		expect(depthsFromCallback).toEqual(values);
+		assert.deepEqual(errors, []);
+		assert.deepEqual(depthsFromCallback, values);
 	});
 
 	test("should ignore the introspection query", () => {
@@ -185,7 +186,7 @@ describe("graphql-depth-limit", () => {
 			depthLimit(5),
 		]);
 
-		expect(errors).toEqual([]);
+		assert.deepEqual(errors, []);
 	});
 
 	test("should catch a query thats too deep", () => {
@@ -211,10 +212,8 @@ describe("graphql-depth-limit", () => {
 			depthLimit(4),
 		]);
 
-		expect(errors.length).toEqual(1);
-		expect(errors[0].message).toEqual(
-			"'' exceeds maximum operation depth of 4",
-		);
+		assert.equal(errors.length, 1);
+		assert.equal(errors[0].message, "'' exceeds maximum operation depth of 4");
 	});
 
 	test("should ignore a field", () => {
@@ -248,8 +247,8 @@ describe("graphql-depth-limit", () => {
 			depthLimit(10, options, spec),
 		]);
 
-		expect(errors).toEqual([]);
-		expect(depthsFromCallback).toEqual(values);
+		assert.deepEqual(errors, []);
+		assert.deepEqual(depthsFromCallback, values);
 	});
 
 	const introQuery = `

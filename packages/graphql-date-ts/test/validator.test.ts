@@ -1,4 +1,5 @@
-import { describe, expect, test } from "bun:test";
+import assert from "node:assert/strict";
+import { describe, test } from "node:test";
 import {
 	validateTime,
 	validateDate,
@@ -30,7 +31,7 @@ describe("validator", () => {
 			"00:00:00.3455334564433+01:00",
 		].forEach((time) => {
 			test(`identifies ${time} as a valid time`, () => {
-				expect(validateTime(time)).toEqual(true);
+				assert.equal(validateTime(time), true);
 			});
 		});
 
@@ -61,7 +62,7 @@ describe("validator", () => {
 			"2016-01-01T00Z",
 		].forEach((time) => {
 			test(`identifies ${time} as an invalid date`, () => {
-				expect(validateTime(time)).toEqual(false);
+				assert.equal(validateTime(time), false);
 			});
 		});
 	});
@@ -78,7 +79,7 @@ describe("validator", () => {
 			"2016-11-20",
 		].forEach((date) => {
 			test(`identifies ${date} as a valid date`, () => {
-				expect(validateDate(date)).toEqual(true);
+				assert.equal(validateDate(date), true);
 			});
 		});
 
@@ -104,7 +105,7 @@ describe("validator", () => {
 			"9999-00-31",
 		].forEach((date) => {
 			test(`identifies ${date} as an invalid date`, () => {
-				expect(validateDate(date)).toEqual(false);
+				assert.equal(validateDate(date), false);
 			});
 		});
 	});
@@ -118,7 +119,7 @@ describe("validator", () => {
 			-2147483648,
 		].forEach((timestamp) => {
 			test(`identifies ${timestamp} as a valid Unix timestamp`, () => {
-				expect(validateUnixTimestamp(timestamp)).toEqual(true);
+				assert.equal(validateUnixTimestamp(timestamp), true);
 			});
 		});
 
@@ -130,7 +131,7 @@ describe("validator", () => {
 			-2147483649,
 		].forEach((timestamp) => {
 			test(`identifies ${timestamp} as an invalid Unix timestamp`, () => {
-				expect(validateUnixTimestamp(timestamp)).toEqual(false);
+				assert.equal(validateUnixTimestamp(timestamp), false);
 			});
 		});
 	});
@@ -155,7 +156,7 @@ describe("validator", () => {
 			"2017-01-01T10:23:11.23545654+01:00",
 		].forEach((dateTime) => {
 			test(`identifies ${dateTime} as a valid date-time`, () => {
-				expect(validateDateTime(dateTime)).toEqual(true);
+				assert.equal(validateDateTime(dateTime), true);
 			});
 		});
 
@@ -186,18 +187,18 @@ describe("validator", () => {
 			"2017-01-07T11:11:11+24:00",
 		].forEach((dateTime) => {
 			test(`identifies ${dateTime} as an invalid date-time`, () => {
-				expect(validateDateTime(dateTime)).toEqual(false);
+				assert.equal(validateDateTime(dateTime), false);
 			});
 		});
 	});
 
 	describe("validateJSDate", () => {
 		test("identifies invalid Date", () => {
-			expect(validateJSDate(new Date("invalid"))).toBeFalsy();
+			assert.equal(validateJSDate(new Date("invalid")), false);
 		});
 
 		test("identifies a valid Date", () => {
-			expect(validateJSDate(new Date(2016, 1, 1))).toBeTruthy();
+			assert.equal(validateJSDate(new Date(2016, 1, 1)), true);
 		});
 	});
 });
