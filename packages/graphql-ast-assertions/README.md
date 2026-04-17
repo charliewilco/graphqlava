@@ -2,6 +2,12 @@
 
 Type guards for narrowing GraphQL `ValueNode` variants without hand-written `kind` checks.
 
+## Workspace Usage
+
+```sh
+npm install
+```
+
 ## Usage
 
 ```ts
@@ -33,6 +39,8 @@ if (isBooleanTypeNode(valueNode)) {
 }
 ```
 
+These helpers are intentionally tiny: they do not transform nodes or walk the AST, they just provide typed guards for GraphQL value-node branches.
+
 ## API
 
 - `isVariableNode(value: ValueNode): value is VariableNode`
@@ -43,3 +51,8 @@ if (isBooleanTypeNode(valueNode)) {
 - `isBooleanTypeNode(value: ValueNode): value is BooleanValueNode`
 - `isEnumTypeNode(value: ValueNode): value is EnumValueNode`
 - `isObjectTypeNode(value: ValueNode): value is ObjectValueNode`
+
+## Requirements
+
+- Node.js `24+`
+- `graphql` `^16.13.2`

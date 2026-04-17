@@ -1,6 +1,6 @@
 # graphqlava
 
-`graphqlava` is a small monorepo of GraphQL utilities for schema validation and scalar handling. The repo now uses Bun workspaces for installs, scripts, and tests, while package builds still go through `tsup`.
+`graphqlava` is a small npm workspace of GraphQL utilities for schema validation, AST narrowing, and RFC 3339 scalar handling. The repository targets Node.js 24+ and uses npm workspaces for installs and task orchestration.
 
 ## Packages
 
@@ -11,19 +11,35 @@
 ## Getting Started
 
 ```sh
-bun install
+npm install
 ```
 
 ## Workspace Commands
 
 ```sh
-bun run typecheck
-bun run build
-bun run test
-bun run format
+npm run typecheck
+npm run build
+npm run test
+npm run format
+npm run check
 ```
 
-`build`, `typecheck`, and `test` run across every workspace package in sequence. Use `bun run format:write` to apply formatting changes.
+Use `npm run format:write` to apply formatting changes. The workspace scripts run across all packages via npm workspaces, and CI uses the same commands on Node.js 24.
+
+## Requirements
+
+- Node.js `24+`
+- npm `11+`
+
+## Continuous Integration
+
+GitHub Actions runs the full verification pass on pushes to `main` and on pull requests:
+
+- `npm ci`
+- `npm run format`
+- `npm run typecheck`
+- `npm run build`
+- `npm run test`
 
 ## Package Layout
 

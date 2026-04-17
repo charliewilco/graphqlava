@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import assert from "node:assert/strict";
 import {
 	serializeTime,
 	serializeTimeString,
@@ -12,14 +12,15 @@ import {
 } from "../src/utils";
 import MockDate from "mockdate";
 import { inspect } from "node:util";
+import { after, before, describe, test } from "node:test";
 
 const stringify = (value: unknown): string => inspect(value, { depth: null });
 
-beforeAll(() => {
+before(() => {
 	MockDate.set(new Date(Date.UTC(2017, 0, 1)));
 });
 
-afterAll(() => {
+after(() => {
 	MockDate.reset();
 });
 
@@ -123,31 +124,31 @@ const mockStringDate: Record<string, [string, Date][]> = {
 describe("formatting", () => {
 	mockDateString.a.forEach(([date, time]) => {
 		test(`serializes ${stringify(date)} into time-string ${time}`, () => {
-			expect(serializeTime(date)).toEqual(time);
+			assert.deepEqual(serializeTime(date), time);
 		});
 	});
 
 	mockStringString.a.forEach(([input, output]) => {
 		test(`serializes time-string ${input} into UTC time-string ${output}`, () => {
-			expect(serializeTimeString(input)).toEqual(output);
+			assert.deepEqual(serializeTimeString(input), output);
 		});
 	});
 
 	mockDateString.b.forEach(([date, dateString]) => {
 		test(`serializes ${stringify(date)} into date-string ${dateString}`, () => {
-			expect(serializeDate(date)).toEqual(dateString);
+			assert.deepEqual(serializeDate(date), dateString);
 		});
 	});
 
 	mockDateString.c.forEach(([date, dateTimeString]) => {
 		test(`serializes ${stringify(date)} into date-time-string ${dateTimeString}`, () => {
-			expect(serializeDateTime(date)).toEqual(dateTimeString);
+			assert.deepEqual(serializeDateTime(date), dateTimeString);
 		});
 	});
 
 	mockDateString.d.forEach(([date, dateTimeString]) => {
 		test(`serializes ${stringify(date)} into date-time-string ${dateTimeString}`, () => {
-			expect(serializeDateTime(date)).toEqual(dateTimeString);
+			assert.deepEqual(serializeDateTime(date), dateTimeString);
 		});
 	});
 
@@ -155,31 +156,31 @@ describe("formatting", () => {
 		test(`serializes Unix timestamp ${stringify(
 			timestamp,
 		)} into date-time-string ${dateTimeString}`, () => {
-			expect(serializeUnixTimestamp(timestamp)).toEqual(dateTimeString);
+			assert.deepEqual(serializeUnixTimestamp(timestamp), dateTimeString);
 		});
 	});
 
 	mockStringDate.a.forEach(([time, date]) => {
 		test(`parses time ${stringify(time)} into Date ${stringify(date)}`, () => {
-			expect(parseTime(time)).toEqual(date);
+			assert.deepEqual(parseTime(time), date);
 		});
 	});
 
 	mockStringDate.b.forEach(([dateString, date]) => {
 		test(`parses date ${stringify(dateString)} into Date ${stringify(date)}`, () => {
-			expect(parseDate(dateString)).toEqual(date);
+			assert.deepEqual(parseDate(dateString), date);
 		});
 	});
 
 	mockStringDate.c.forEach(([dateTime, date]) => {
 		test(`parses date-time ${stringify(dateTime)} into Date ${stringify(date)}`, () => {
-			expect(parseDateTime(dateTime)).toEqual(date);
+			assert.deepEqual(parseDateTime(dateTime), date);
 		});
 	});
 
 	mockStringString.b.forEach(([input, output]) => {
 		test(`serializes date-time-string ${input} into UTC date-time-string ${output}`, () => {
-			expect(serializeDateTimeString(input)).toEqual(output);
+			assert.deepEqual(serializeDateTimeString(input), output);
 		});
 	});
 });

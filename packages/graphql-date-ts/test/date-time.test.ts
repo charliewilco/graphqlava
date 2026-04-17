@@ -1,21 +1,17 @@
-import { describe, expect, test } from "bun:test";
-import { GraphQLDateTime } from "../src";
-import { Kind, ValueNode } from "graphql";
+import assert from "node:assert/strict";
 import { inspect } from "node:util";
+import { describe, test } from "node:test";
+import { Kind, ValueNode } from "graphql";
+import { GraphQLDateTime } from "../src";
 
 const stringify = (value: unknown): string => inspect(value, { depth: null });
 
 const expectTypeErrorMessage = (callback: () => unknown, message: string) => {
-	let thrown: unknown;
-
-	try {
-		callback();
-	} catch (error) {
-		thrown = error;
-	}
-
-	expect(thrown).toBeInstanceOf(TypeError);
-	expect((thrown as TypeError | undefined)?.message).toBe(message);
+	assert.throws(callback, (error: unknown) => {
+		assert.ok(error instanceof TypeError);
+		assert.equal(error.message, message);
+		return true;
+	});
 };
 
 const invalidDates = [
@@ -52,7 +48,8 @@ const validDates: [string, Date][] = [
 
 describe("GraphQLDateTime", () => {
 	test("has a description", () => {
-		expect(GraphQLDateTime.description).toBe(
+		assert.equal(
+			GraphQLDateTime.description,
 			"A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.",
 		);
 	});
@@ -77,7 +74,7 @@ describe("GraphQLDateTime", () => {
 			test(`serializes javascript Date ${stringify(value)} into ${stringify(
 				expected,
 			)}`, () => {
-				expect(GraphQLDateTime.serialize(value)).toEqual(expected);
+				assert.deepEqual(GraphQLDateTime.serialize(value), expected);
 			});
 		});
 
@@ -95,7 +92,7 @@ describe("GraphQLDateTime", () => {
 			["2017-01-07T00:00:00.1+01:20", "2017-01-06T22:40:00.1Z"],
 		].forEach(([input, output]) => {
 			test(`serializes date-time-string ${input} into UTC date-time-string ${output}`, () => {
-				expect(GraphQLDateTime.serialize(input)).toEqual(output);
+				assert.deepEqual(GraphQLDateTime.serialize(input), output);
 			});
 		});
 
@@ -122,7 +119,7 @@ describe("GraphQLDateTime", () => {
 			test(`serializes unix timestamp ${stringify(
 				value,
 			)} into date-string ${expected}`, () => {
-				expect(GraphQLDateTime.serialize(value)).toEqual(expected);
+				assert.deepEqual(GraphQLDateTime.serialize(value), expected);
 			});
 		});
 
@@ -150,7 +147,7 @@ describe("GraphQLDateTime", () => {
 			test(`parses date-string ${stringify(value)} into javascript Date ${stringify(
 				expected,
 			)}`, () => {
-				expect(GraphQLDateTime.parseValue(value)).toEqual(expected);
+				assert.deepEqual(GraphQLDateTime.parseValue(value), expected);
 			});
 		});
 
@@ -183,7 +180,7 @@ describe("GraphQLDateTime", () => {
 			test(`parses literal ${stringify(literal)} into javascript Date ${stringify(
 				expected,
 			)}`, () => {
-				expect(GraphQLDateTime.parseLiteral(literal)).toEqual(expected);
+				assert.deepEqual(GraphQLDateTime.parseLiteral(literal), expected);
 			});
 		});
 
