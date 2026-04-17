@@ -1,5 +1,5 @@
 {
-	"name": "@reubin/graphql-ast-assertions",
+	"name": "@graphqlava/graphql-ast-assertions",
 	"version": "1.2.3",
 	"type": "module",
 	"main": "dist/index.cjs",
