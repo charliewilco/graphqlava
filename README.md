@@ -1,6 +1,6 @@
 # graphqlava
 
-`graphqlava` is a small npm workspace of GraphQL utilities for schema validation, AST narrowing, and RFC 3339 scalar handling. The repository targets Node.js 18.18+ and uses npm workspaces for installs, package builds, and release automation.
+`graphqlava` is a small npm workspace of GraphQL utilities for schema validation, AST narrowing, and RFC 3339 scalar handling. The repository targets Node.js 24+ and uses npm workspaces for installs, package builds, and release automation.
 
 ## Packages
 
@@ -32,8 +32,8 @@ Use `npm run format:write` to apply formatting changes. The workspace scripts ru
 
 ## Requirements
 
-- Node.js `18.18+`
-- npm `10+`
+- Node.js `24+`
+- npm `11+`
 
 ## Continuous Integration
 

@@ -54,5 +54,5 @@ These helpers are intentionally tiny: they do not transform nodes or walk the AS
 
 ## Requirements
 
-- Node.js `18.18+`
+- Node.js `24+`
 - `graphql` `^16.13.2`
