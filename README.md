@@ -1,4 +1,4 @@
-# graphqlava
+# GraphQLava 🌋
 
 `graphqlava` is a small npm workspace of GraphQL utilities for schema validation, AST narrowing, and RFC 3339 scalar handling. The repository targets Node.js 24+ and uses npm workspaces for installs, package builds, and release automation.
 
