@@ -1,6 +1,6 @@
 {
 	"name": "@graphqlava/graphql-depth-limit",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"description": "GraphQL validation rule for rejecting operations that exceed a maximum depth.",
 	"type": "module",
 	"main": "dist/index.cjs",
